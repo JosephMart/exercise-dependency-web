@@ -1,5 +1,6 @@
 Click==7.0
 coverage==4.5.2
+flake8==3.6.0
 Flask==1.0.2
 Flask-SQLAlchemy==2.3.2
 Flask-Testing==0.7.1
@@ -7,6 +8,9 @@ gunicorn==19.9.0
 itsdangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.1.0
+mccabe==0.6.1
 psycopg2-binary==2.7.6.1
+pycodestyle==2.4.0
+pyflakes==2.0.0
 SQLAlchemy==1.2.15
 Werkzeug==0.14.1

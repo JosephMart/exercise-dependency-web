@@ -17,7 +17,3 @@ docker-compose -f docker-compose-dev.yml build # build
 docker-compose -f docker-compose-dev.yml up -d # bring up
 docker-compose -f docker-compose-dev.yml logs # view logs
 ```
-
-## Documentation
-
-* [Neo4j Python Driver](https://neo4j.com/docs/api/python-driver/current/)

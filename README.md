@@ -1,5 +1,7 @@
 # exercise-dependency-web
 
+[![Build Status](https://travis-ci.org/josephmart/exercise-dependency-web.svg?branch=master)](https://travis-ci.org/josephmart/exercise-dependency-web)
+
 Contains the source code for the thesis completed under Dr. Philip B. Yasskin
 
 ## Dev Setup

@@ -5,16 +5,14 @@ services:
     container_name: users
     build:
       context: ./services/users
-      dockerfile: Dockerfile-dev
-    volumes:
-      - "./services/users:/usr/src/app"
-    ports:
-      - 5001:5000
+      dockerfile: Dockerfile-prod
+    expose:
+      - "5000"
     environment:
-      - FLASK_DEBUG=1
-      - APP_SETTINGS=project.config.DevelopmentConfig
+      - APP_SETTINGS=project.config.ProductionConfig
       - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
       - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+      - SECRET_KEY=${SECRET_KEY}
     depends_on:
       - users-db
     links:
@@ -35,15 +33,12 @@ services:
     container_name: client
     build:
       context: ./services/client
-      dockerfile: Dockerfile-dev
-    volumes:
-      - "./services/client:/usr/src/app"
+      dockerfile: Dockerfile-prod
+      args:
+        - NODE_ENV=production
+        - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
     ports:
-      - "3007:3000"
-    environment:
-      - NODE_ENV=development
-      - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
-      # - CHOKIDAR_USEPOLLING=true
+      - "3007:80"
     depends_on:
       - users
     links:
@@ -53,12 +48,10 @@ services:
     container_name: nginx
     build:
       context: ./services/nginx
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile-prod
     restart: always
     ports:
       - 80:80
     depends_on:
       - users
       - client
-    links:
-      - users

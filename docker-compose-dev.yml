@@ -46,8 +46,10 @@ services:
       # - CHOKIDAR_USEPOLLING=true
     depends_on:
       - users
+      - exercises
     links:
       - users
+      - exercises
 
   nginx:
     container_name: nginx
@@ -60,8 +62,11 @@ services:
     depends_on:
       - users
       - client
+      - exercises
     links:
       - users
+      - client
+      - exercises
 
   exercises:
     container_name: exercises
@@ -77,7 +82,7 @@ services:
       - APP_SETTINGS=project.config.DevelopmentConfig
       - DATABASE_URL=bolt://exerises-db:7687
       - DATABASE_USERNAME=neo4j
-      - DATABASE_PASSWORD=neo4j
+      - DATABASE_PASSWORD=password
     depends_on:
       - exercises-db
     links:
@@ -85,11 +90,13 @@ services:
 
   exercises-db:
     container_name: exercises-db
-    image: neo4j:3.5
+    build:
+      context: ./services/exercises/project/db
+      dockerfile: Dockerfile
     ports:
       - 7484:7474 # http
       - 7483:7473 # https
       - 7497:7687 # bolt
     environment:
-      - NEO4J_AUTH=neo4j/neo4j
+      - NEO4J_AUTH=neo4j/password
       - NEO4J_dbms_allow__upgrade=true # allow upgrades

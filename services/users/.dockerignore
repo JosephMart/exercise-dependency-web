@@ -2,3 +2,4 @@ venv
 .dockerignore
 Dockerfile-dev
 Dockerfile-prod
+migrations

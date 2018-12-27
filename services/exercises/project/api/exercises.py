@@ -10,3 +10,21 @@ def ping_pong():
         'status': 'success',
         'message': 'pong!'
     })
+
+
+@exercises_blueprint.route('/exercises', methods=['GET'])
+def get_exercises():
+    """Get exercises, filter with query string..."""
+    return jsonify({
+        'status': 'success',
+        'message': 'pong!'
+    })
+
+
+@exercises_blueprint.route('/exercises', methods=['POST'])
+def add_exercises():
+    """Ingest exercises"""
+    return jsonify({
+        'status': 'success',
+        'message': 'pong!'
+    })

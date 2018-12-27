@@ -3,7 +3,7 @@ import coverage
 
 from flask.cli import FlaskGroup
 
-from project import create_app
+from project import create_app, get_db
 
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
@@ -22,7 +22,7 @@ COV.start()
 @cli.command()
 def recreate_db():
     """Recreate or create the DB"""
-    pass
+    db = get_db()
 
 
 @cli.command()

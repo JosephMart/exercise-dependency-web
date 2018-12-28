@@ -21,7 +21,7 @@ class User(Entity):
         self.created_at = datetime.strptime(created_at, date_fmt_str)
         self.updated_at = datetime.strptime(updated_at, date_fmt_str)
 
-    def serialize(self):
+    def serialize(self) -> Dict[str, Union[str, int, float]]:
         """Serialize a `User` object into a `dict`"""
         return {
             'user_id': self.user_id,
@@ -29,6 +29,6 @@ class User(Entity):
             'updated_at': str(self.updated_at)
         }
 
-    def deserialize(**kwargs):
+    def deserialize(**kwargs) -> User:
         """Deserialize a `dict` into a `User`"""
         return User(kwargs['id'], kwargs['user_id'], kwargs['created_at'], kwargs['updated_at'])

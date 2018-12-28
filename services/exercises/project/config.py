@@ -4,6 +4,7 @@ import os
 class BaseConfig:
     """Base configuration"""
     TESTING = False
+    SECRET_KEY = 'my_precious'
 
 
 class DevelopmentConfig(BaseConfig):

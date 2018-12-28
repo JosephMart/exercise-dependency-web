@@ -15,7 +15,7 @@ class User(Entity):
     created_at: datetime = None
     updated_at: datetime = None
 
-    def __init__(self, id: int, user_id: int, created_at: datetime, updated_at: datetime):
+    def __init__(self, id: int, user_id: int, created_at=datetime.now(), updated_at=datetime.now()):
         Entity.__init__(self, id)
         self.user_id = user_id
         self.created_at = datetime.strptime(created_at, date_fmt_str)

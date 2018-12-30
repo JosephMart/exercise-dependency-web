@@ -24,6 +24,7 @@ class User(Entity):
     def serialize(self) -> Dict[str, Union[str, int, float, None]]:
         """Serialize a `User` object into a `dict`"""
         return {
+            'id': self.id,
             'user_id': self.user_id,
             'created_at': str(self.created_at),
             'updated_at': str(self.updated_at)

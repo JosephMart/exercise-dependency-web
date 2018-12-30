@@ -19,6 +19,11 @@ export function cleanTree(tree) {
     })
 }
 
+/**
+ * Compare for a deep equal of two objects
+ * @param {Object} x 
+ * @param {Object} y 
+ */
 export function deepEqual(x, y) {
     const ok = Object.keys,
         tx = typeof x,

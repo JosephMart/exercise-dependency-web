@@ -1,12 +1,19 @@
 import unittest
 import coverage
 
+from flask import g
 from flask.cli import FlaskGroup
 
 from project import create_app, get_db
 
+
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
+
+@app.teardown_appcontext
+def close_db(error):
+    if hasattr(g, 'neo4j_db'):
+        g.neo4j_db.close()
 
 COV = coverage.coverage(
     branch=True,

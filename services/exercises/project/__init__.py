@@ -2,16 +2,16 @@ import os
 
 from flask import Flask, g
 from flask_cors import CORS
-from neo4j.v1 import GraphDatabase, basic_auth
+from neo4j import GraphDatabase, basic_auth, Session
 
 
-password = os.getenv("DATABASE_PASSWORD")
+password = os.getenv('DATABASE_PASSWORD')
 
 driver = GraphDatabase.driver(
-    'bolt://exercises-db', auth=basic_auth("neo4j", password))
+    'bolt://exercises-db', auth=basic_auth('neo4j', password))
 
 
-def get_db():
+def get_db() -> Session:
     if not hasattr(g, 'neo4j_db'):
         g.neo4j_db = driver.session()
     return g.neo4j_db

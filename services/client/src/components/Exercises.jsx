@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-import SortableTree from "react-sortable-tree";
+import JSONTree from "react-json-tree";
 import {
   ButtonGroup,
   Button,
@@ -10,9 +10,11 @@ import {
   ButtonToolbar
 } from "react-bootstrap";
 
-import "react-sortable-tree/style.css";
-import NewExercise from "./modals/NewExercise";
-import NewChapter from "./modals/NewChapter";
+import ExerciseModal from "./modals/ExerciseModal";
+import ChapterModal from "./modals/ChapterModal";
+
+import "./Exercises.scss";
+import CustomSortableTree from "./CustomSortableTree";
 
 // Dropdown Constants
 const ADD_CHAPTER = 1;
@@ -22,8 +24,10 @@ class Exercises extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newExerciseVisible: false,
-      newChapterVisible: false
+      exerciseModalVisible: false,
+      exerciseModalData: {},
+      chapterModalData: {},
+      chapterModalVisible: false
     };
   }
 
@@ -32,7 +36,7 @@ class Exercises extends Component {
   }
 
   validModal(name) {
-    return ["newExercise", "newChapter"].includes(name);
+    return ["exerciseModal", "chapterModal"].includes(name);
   }
 
   hideModal = name => {
@@ -44,59 +48,90 @@ class Exercises extends Component {
     });
   };
 
-  showModal = name => {
+  showModal = (name, d) => {
     if (!this.validModal(name)) {
       console.error(`${name} is not a valid modal name`);
     }
     this.setState({
-      [`${name}Visible`]: true
+      [`${name}Visible`]: true,
+      [`${name}Data`]: d === undefined ? {} : d
     });
   };
 
   handleAddDropdown = e => {
     switch (e) {
       case ADD_EXERCISE:
-        return this.showModal("newExercise");
+        return this.showModal("exerciseModal");
       case ADD_CHAPTER:
-        return this.showModal("newChapter");
+        return this.showModal("chapterModal");
       default:
         console.error(`No modal for key ${e}`);
     }
   };
 
+  hideChapterModal = () => this.hideModal("chapterModal");
+  hideExerciseModal = () => this.hideModal("exerciseModal");
+
   render() {
-    const modals = [
-      <NewExercise
-        key="addExercise"
-        show={this.state.newExerciseVisible}
-        handleClose={() => {
-          this.hideModal("newExercise");
-        }}
-      />,
-      <NewChapter
-        key="addChapter"
-        show={this.state.newChapterVisible}
-        handleClose={() => {
-          this.hideModal("newChapter");
-        }}
-      />
-    ];
     return (
-      <div>
+      <div id="Exercises">
         <h1>Exercises</h1>
         <hr />
+        <JSONTree
+          data={this.props.treeData}
+          getItemString={(type, data, itemType, itemString) => {
+            return <span className="new-exercise">{data.title}</span>;
+          }}
+          valueRenderer={raw => <em className="new-exercise">{raw}</em>}
+          labelRenderer={raw => (
+            <span className="new-exercise">{`${raw[0]}:`}</span>
+          )}
+          shouldExpandNode={(keyName, data, level) => level % 2 === 0}
+          theme={{
+            scheme: "chalk",
+            author: "chris kempson (http://chriskempson.com)",
+            base00: "#151515",
+            base01: "#202020",
+            base02: "#303030",
+            base03: "#505050",
+            base04: "#b0b0b0",
+            base05: "#d0d0d0",
+            base06: "#e0e0e0",
+            base07: "#f5f5f5",
+            base08: "#fb9fb1",
+            base09: "#eda987",
+            base0A: "#ddb26f",
+            base0B: "#acc267",
+            base0C: "#12cfc0",
+            base0D: "#6fc2ef",
+            base0E: "#e1a3ee",
+            base0F: "#deaf8f"
+          }}
+          hideRoot
+        />
         <ButtonToolbar>
           <ButtonGroup>
-            <Button bsSize="small" bsStyle="success" onClick={() => {}}>
+            <Button
+              bsSize="small"
+              bsStyle="success"
+              onClick={() => {}}
+              disabled={this.props.hasHistory}
+            >
               Commit
             </Button>
-            <Button bsSize="small" bsStyle="info" onClick={() => {}}>
+            <Button
+              bsSize="small"
+              bsStyle="info"
+              onClick={() => {}}
+              disabled={this.props.hasHistory}
+            >
               View Diff
             </Button>
             <Button
               bsSize="small"
               bsStyle="warning"
               onClick={this.props.undoTree}
+              disabled={this.props.hasHistory}
             >
               Undo
             </Button>
@@ -104,6 +139,7 @@ class Exercises extends Component {
               bsSize="small"
               bsStyle="danger"
               onClick={this.props.resetTree}
+              disabled={this.props.hasHistory}
             >
               Reset
             </Button>
@@ -137,13 +173,25 @@ class Exercises extends Component {
             </Button>
           </ButtonGroup>
         </ButtonToolbar>
-        <div style={{ height: 1000 }}>
-          <SortableTree
-            treeData={this.props.treeData}
-            onChange={this.props.handleTreeChange}
-          />
-        </div>
-        {modals}
+        <CustomSortableTree
+          treeData={this.props.treeData}
+          handleTreeChange={this.props.handleTreeChange}
+          removeNode={this.props.removeNode}
+          addChild={this.props.addChild}
+          showModal={this.showModal}
+        />
+        <ExerciseModal
+          key="exerciseModal"
+          show={this.state.exerciseModalVisible}
+          data={this.state.exerciseModalData}
+          handleClose={this.hideExerciseModal}
+        />
+        <ChapterModal
+          key="addChapter"
+          show={this.state.chapterModalVisible}
+          handleClose={this.hideChapterModal}
+          data={this.state.chapterModalData}
+        />
       </div>
     );
   }
@@ -151,15 +199,19 @@ class Exercises extends Component {
 
 Exercises.propTypes = {
   treeData: PropTypes.arrayOf(PropTypes.shape()),
+  hasHistory: PropTypes.bool,
   getExercises: PropTypes.func.isRequired,
   handleTreeChange: PropTypes.func.isRequired,
   toggleNodeExpansion: PropTypes.func.isRequired,
   resetTree: PropTypes.func.isRequired,
-  undoTree: PropTypes.func.isRequired
+  undoTree: PropTypes.func.isRequired,
+  removeNode: PropTypes.func.isRequired,
+  addChild: PropTypes.func.isRequired
 };
 
 Exercises.defaultProps = {
-  treeData: []
+  treeData: [],
+  hasHistory: false
 };
 
 export default withRouter(Exercises);

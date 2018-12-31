@@ -1,0 +1,15 @@
+#Exercises {
+    @import '~react-sortable-tree/style.css';
+
+    .new-exercise {
+        background-color: greenyellow;
+    }
+
+    .removed-exercise {
+        background-color: red;
+    }
+
+    .moved-exercise {
+        background-color: yellow;
+    }
+}

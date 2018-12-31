@@ -5,7 +5,11 @@ const data = [{
         "children": [{
             "title": "Functions",
             "children": [{
-                "title": "Definition and Properties"
+                "title": "Definition and Properties",
+                "children": [{
+                    "title": "Exercise #1",
+                    "isExercise": true
+                }]
             }, {
                 "title": "Powers"
             }, {

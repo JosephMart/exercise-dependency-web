@@ -10,7 +10,11 @@ import Message from "./components/Message";
 import Footer from "./components/Footer";
 import Exercises from "./components/Exercises";
 import Textbooks from "./components/Textbooks";
-import { toggleExpandedForAll } from "react-sortable-tree";
+import {
+  toggleExpandedForAll,
+  removeNodeAtPath,
+  addNodeUnderParent
+} from "react-sortable-tree";
 
 import MOCK_EXERCISES from "./components/ExerciseMockData";
 import { cleanTree, deepEqual } from "./utils";
@@ -43,7 +47,7 @@ class App extends Component {
     // TODO: actually fetch textbooks for a particular user
     this.setState({
       initialExercises: MOCK_EXERCISES,
-      exercisesStates: [MOCK_EXERCISES],
+      exercisesHistory: [MOCK_EXERCISES],
       treeData: MOCK_EXERCISES
     });
   };
@@ -97,14 +101,6 @@ class App extends Component {
     },
     undoTree: () => {
       this.setState(prevState => {
-        if (
-          deepEqual(
-            cleanTree(prevState.treeData),
-            cleanTree(prevState.initialExercises)
-          )
-        ) {
-          return;
-        }
         const exercisesHistory = [
           prevState.initialExercises,
           ...prevState.exercisesHistory.slice(
@@ -117,7 +113,38 @@ class App extends Component {
           treeData: exercisesHistory[exercisesHistory.length - 1]
         };
       });
-    }
+    },
+    removeNode: path =>
+      this.setState(prevState => {
+        const treeData = removeNodeAtPath({
+          treeData: prevState.treeData,
+          path,
+          getNodeKey: ({ treeIndex }) => treeIndex
+        });
+
+        return {
+          treeData,
+          exercisesHistory: [...prevState.exercisesHistory, treeData]
+        };
+      }),
+    addChild: path =>
+      this.setState(prevState => {
+        const { treeData } = addNodeUnderParent({
+          treeData: prevState.treeData,
+          parentKey: path[path.length - 1],
+          expandParent: true,
+          getNodeKey: ({ treeIndex }) => treeIndex,
+          newNode: {
+            title: "New Chapter"
+          },
+          addAsFirstChild: true
+        });
+
+        return {
+          treeData,
+          exercisesHistory: [...prevState.exercisesHistory, treeData]
+        };
+      })
   };
 
   render() {
@@ -154,6 +181,7 @@ class App extends Component {
                     <Exercises
                       getExercises={this.getExercises}
                       treeData={this.state.treeData}
+                      hasHistory={this.state.exercisesHistory.length < 2}
                       {...this.exercisesUtils}
                     />
                   )}

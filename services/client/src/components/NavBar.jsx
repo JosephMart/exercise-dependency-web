@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Navbar, Nav, NavItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-import "./NavBar.css";
+import "./NavBar.scss";
 
 const NavBar = props => (
   <Navbar collapseOnSelect>

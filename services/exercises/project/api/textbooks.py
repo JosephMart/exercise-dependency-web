@@ -7,7 +7,15 @@ textbooks_blueprint = Blueprint('textbook', __name__)
 
 @textbooks_blueprint.route('/textbooks', methods=['GET'])
 def get_textbooks():
-    user_id = request.args.get('user_id')
+    user_id = None
+    try:
+        user_id = int(request.args.get('user_id'))
+    except ValueError:
+        return jsonify({
+            'status': 'error',
+            'message': 'user_id must be an integer'
+        })
+
     if user_id == None:
         return jsonify({
             'status': 'error',

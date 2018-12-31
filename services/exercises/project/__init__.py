@@ -8,7 +8,7 @@ from neo4j import GraphDatabase, basic_auth, Session
 password = os.getenv('DATABASE_PASSWORD')
 
 driver = GraphDatabase.driver(
-    'bolt://exercises-db', auth=basic_auth('neo4j', password))
+    'bolt://exercises-db:7687', auth=basic_auth('neo4j', password))
 
 
 def get_db() -> Session:
@@ -31,6 +31,8 @@ def create_app(script_info=None):
 
     # register blueprints
     from project.api.exercises import exercises_blueprint
+    from project.api.textbooks import textbooks_blueprint
+    app.register_blueprint(textbooks_blueprint)
     app.register_blueprint(exercises_blueprint)
 
     # shell context for flask cli

@@ -1,7 +1,7 @@
 from project.db.domain.entity import Entity
 from project.db.domain import date_fmt_str
-from datetime import datetime
-from typing import Dict, Union, Optional
+from neotime import datetime
+from typing import Dict, Union, Optional, List
 
 
 class Exercise(Entity):
@@ -18,15 +18,15 @@ class Exercise(Entity):
     created_at: datetime = None
     updated_at: datetime = None
 
-    def __init__(self, id: Optional[int, None], question: str, solution: str, hint: str, created_at=datetime.now(), updated_at=datetime.now()):
+    def __init__(self, id: Optional[int], question: str, solution: str, hint: str, created_at=datetime.now(), updated_at=datetime.now()):
         Entity.__init__(self, id)
         self.question = question
         self.solution = solution
         self.hint = hint
-        self.created_at = datetime.strptime(created_at, date_fmt_str)
-        self.updated_at = datetime.strptime(updated_at, date_fmt_str)
+        self.created_at = created_at
+        self.updated_at = updated_at
 
-    def serialize(self) -> Dict[str, Union[str, int, float, None]]:
+    def serialize(self) -> Dict[str, Union[str, int, float, None, List[int]]]:
         """Serialize an `Exercise` object into a `dict`"""
         return {
             'id': self.id,
@@ -37,6 +37,6 @@ class Exercise(Entity):
             'updated_at': str(self.updated_at)
         }
 
-    def deserialize(**kwargs) -> Exercise:
+    def deserialize(**kwargs) -> 'Exercise':
         """Deserialize a `dict` into an `Exercise` object"""
         return Exercise(kwargs['id'], kwargs['question'], kwargs['solution'], kwargs['hint'], kwargs['created_at'], kwargs['updated_at'])

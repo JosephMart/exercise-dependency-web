@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Union, Type, Optional
+from typing import Dict, Union, Type, Optional, List
 
 class Entity(ABC):
     """
@@ -9,16 +9,16 @@ class Entity(ABC):
     `id`: the Neo4j ID
     """
 
-    id: Optional[int, None] = None
+    id: Optional[int] = None
 
-    def __init__(self, id: Optional[int, None]):
+    def __init__(self, id: Optional[int]):
         self.id = id
 
     @abstractmethod
-    def serialize(self) -> Dict[str, Union[str, int, float, None]]:
+    def serialize(self) -> Dict[str, Union[str, int, float, None, List[int]]]:
         pass
 
-    @abstractmethod
     @staticmethod
-    def deserialize(**kwargs) -> Type[Entity]:
+    @abstractmethod
+    def deserialize(**kwargs) -> Type['Entity']:
         pass

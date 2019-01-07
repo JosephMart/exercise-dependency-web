@@ -2,18 +2,23 @@ import os
 
 from flask import Flask, g
 from flask_cors import CORS
-from neo4j import GraphDatabase, basic_auth, Session
+
+from py2neo import Graph
 
 
-password = os.getenv('DATABASE_PASSWORD')
+password = os.getenv('DATABASE_PASSWORD', '')
 
-driver = GraphDatabase.driver(
-    'bolt://exercises-db:7687', auth=basic_auth('neo4j', password))
+driver = Graph(
+    auth=('neo4j', password),
+    host='exercises-db',
+    port=7687,
+    scheme='bolt'
+)
 
 
-def get_db() -> Session:
+def get_db() -> Graph:
     if not hasattr(g, 'neo4j_db'):
-        g.neo4j_db = driver.session()
+        g.neo4j_db = driver  # TODO: not able to find docs on sessions with py2neo
     return g.neo4j_db
 
 
@@ -36,5 +41,5 @@ def create_app(script_info=None):
     app.register_blueprint(exercises_blueprint)
 
     # shell context for flask cli
-    app.shell_context_processor({'app': app, 'db': driver.session()})
+    app.shell_context_processor({'app': app, 'db': driver})
     return app

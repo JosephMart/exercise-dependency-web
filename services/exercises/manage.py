@@ -3,17 +3,21 @@ import coverage
 
 from flask import g
 from flask.cli import FlaskGroup
+from py2neo import Relationship
 
 from project import create_app, get_db
+from project.models import Textbook, Chapter
 
 
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
 
+
 @app.teardown_appcontext
 def close_db(error):
     if hasattr(g, 'neo4j_db'):
         g.neo4j_db.close()
+
 
 COV = coverage.coverage(
     branch=True,
@@ -45,7 +49,23 @@ def test():
 @cli.command()
 def seed_db():
     """Seeds the database."""
-    pass
+    graph = get_db()
+
+    # t = Textbook()
+    results = list(Chapter.match(graph))
+    app.logger.info(results)
+    # t.title = "Hello Book"
+    # t.uuid = 2
+    # # t.gen_uuid()
+    # c = Chapter()
+    # c.name = "Chapter 1"
+    # c.uuid = 123
+
+    # t.chapters = [c]
+
+    # graph.push(c)
+    # graph.push(t)
+    # graph.create(Relationship(c.__node__, 'CHAPTER_OF', t.__node__))
 
 
 @cli.command()
